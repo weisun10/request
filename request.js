@@ -19,7 +19,6 @@ var getProxyFromURI = require('./lib/getProxyFromURI')
 var Querystring = require('./lib/querystring').Querystring
 var Auth = require('./lib/auth').Auth
 var OAuth = require('./lib/oauth').OAuth
-var hawk = require('./lib/hawk')
 var Multipart = require('./lib/multipart').Multipart
 var Redirect = require('./lib/redirect').Redirect
 var Tunnel = require('./lib/tunnel').Tunnel
@@ -345,10 +344,6 @@ Request.prototype.init = function (options) {
   }
 
   // Auth must happen last in case signing is dependent on other headers
-
-  if (options.hawk) {
-    self.hawk(options.hawk)
-  }
 
   if (options.auth) {
     if (Object.prototype.hasOwnProperty.call(options.auth, 'username')) {
