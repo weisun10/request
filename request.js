@@ -1318,10 +1318,6 @@ Request.prototype.auth = function (user, pass, sendImmediately, bearer) {
   return self
 }
 
-Request.prototype.hawk = function (opts) {
-  var self = this
-  self.setHeader('Authorization', hawk.header(self.uri, self.method, opts))
-}
 Request.prototype.oauth = function (_oauth) {
   var self = this
 
