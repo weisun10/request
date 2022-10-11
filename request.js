@@ -6,8 +6,6 @@ var url = require('url')
 var util = require('util')
 var stream = require('stream')
 var zlib = require('zlib')
-var aws2 = require('aws-sign2')
-var aws4 = require('aws4')
 var mime = require('mime-types')
 var caseless = require('caseless')
 var ForeverAgent = require('forever-agent')
@@ -347,9 +345,6 @@ Request.prototype.init = function (options) {
   }
 
   // Auth must happen last in case signing is dependent on other headers
-  if (options.aws) {
-    self.aws(options.aws)
-  }
 
   if (options.hawk) {
     self.hawk(options.hawk)
@@ -718,9 +713,6 @@ Request.prototype.start = function () {
 
   if (self.src && self.src.stat && self.src.stat.size && !self.hasHeader('content-length')) {
     self.setHeader('content-length', self.src.stat.size)
-  }
-  if (self._aws) {
-    self.aws(self._aws, true)
   }
 
   // We have a method named auth, which is completely different from the http.request
@@ -1327,65 +1319,6 @@ Request.prototype.auth = function (user, pass, sendImmediately, bearer) {
   var self = this
 
   self._auth.onRequest(user, pass, sendImmediately, bearer)
-
-  return self
-}
-Request.prototype.aws = function (opts, now) {
-  var self = this
-
-  if (!now) {
-    self._aws = opts
-    return self
-  }
-
-  if (opts.sign_version === 4 || opts.sign_version === '4') {
-    // use aws4
-    var options = {
-      host: self.uri.host,
-      path: self.uri.path,
-      method: self.method,
-      headers: self.headers,
-      body: self.body
-    }
-    if (opts.service) {
-      options.service = opts.service
-    }
-    var signRes = aws4.sign(options, {
-      accessKeyId: opts.key,
-      secretAccessKey: opts.secret,
-      sessionToken: opts.session
-    })
-    self.setHeader('authorization', signRes.headers.Authorization)
-    self.setHeader('x-amz-date', signRes.headers['X-Amz-Date'])
-    if (signRes.headers['X-Amz-Security-Token']) {
-      self.setHeader('x-amz-security-token', signRes.headers['X-Amz-Security-Token'])
-    }
-  } else {
-    // default: use aws-sign2
-    var date = new Date()
-    self.setHeader('date', date.toUTCString())
-    var auth = {
-      key: opts.key,
-      secret: opts.secret,
-      verb: self.method.toUpperCase(),
-      date: date,
-      contentType: self.getHeader('content-type') || '',
-      md5: self.getHeader('content-md5') || '',
-      amazonHeaders: aws2.canonicalizeHeaders(self.headers)
-    }
-    var path = self.uri.path
-    if (opts.bucket && path) {
-      auth.resource = '/' + opts.bucket + path
-    } else if (opts.bucket && !path) {
-      auth.resource = '/' + opts.bucket
-    } else if (!opts.bucket && path) {
-      auth.resource = path
-    } else if (!opts.bucket && !path) {
-      auth.resource = '/'
-    }
-    auth.resource = aws2.canonicalizeResource(auth.resource)
-    self.setHeader('authorization', aws2.authorization(auth))
-  }
 
   return self
 }
