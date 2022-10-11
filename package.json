@@ -7,7 +7,7 @@
     "util",
     "utility"
   ],
-  "version": "2.88.2",
+  "version": "2.88.3",
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">= 6"
+    "node": ">= 16"
   },
   "main": "index.js",
   "files": [
