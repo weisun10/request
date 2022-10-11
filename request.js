@@ -8,7 +8,6 @@ var stream = require('stream')
 var zlib = require('zlib')
 var aws2 = require('aws-sign2')
 var aws4 = require('aws4')
-var httpSignature = require('http-signature')
 var mime = require('mime-types')
 var caseless = require('caseless')
 var ForeverAgent = require('forever-agent')
@@ -354,10 +353,6 @@ Request.prototype.init = function (options) {
 
   if (options.hawk) {
     self.hawk(options.hawk)
-  }
-
-  if (options.httpSignature) {
-    self.httpSignature(options.httpSignature)
   }
 
   if (options.auth) {
@@ -1394,22 +1389,7 @@ Request.prototype.aws = function (opts, now) {
 
   return self
 }
-Request.prototype.httpSignature = function (opts) {
-  var self = this
-  httpSignature.signRequest({
-    getHeader: function (header) {
-      return self.getHeader(header, self.headers)
-    },
-    setHeader: function (header, value) {
-      self.setHeader(header, value)
-    },
-    method: self.method,
-    path: self.path
-  }, opts)
-  debug('httpSignature authorization', self.getHeader('authorization'))
 
-  return self
-}
 Request.prototype.hawk = function (opts) {
   var self = this
   self.setHeader('Authorization', hawk.header(self.uri, self.method, opts))
