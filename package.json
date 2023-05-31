@@ -7,14 +7,14 @@
     "util",
     "utility"
   ],
-  "version": "2.88.3",
+  "version": "2.88.4",
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/request/request.git"
+    "url": "https://github.com/weisun10/request.git"
   },
   "bugs": {
-    "url": "http://github.com/request/request/issues"
+    "url": "http://github.com/weisun10/request/issues"
   },
   "license": "Apache-2.0",
   "engines": {
